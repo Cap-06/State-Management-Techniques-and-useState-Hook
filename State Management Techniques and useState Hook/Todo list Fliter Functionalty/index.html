@@ -1,0 +1,193 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Todo List</title>
+  <style>
+    body {
+      font-family: Georgia, 'Times New Roman', Times, serif;
+      background-color: #f0f0f0; 
+    }
+
+    #root {
+      max-width: 600px;
+      margin: 20px auto;
+      background-color: #fff;
+      padding: 20px;
+      border: 2px solid #ccc;
+      border-radius: 5px;
+      box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    }
+
+    input[type="text"] {
+      width: calc(100% - 100px);
+      padding: 10px;
+      border: 2px solid #ccc;
+      border-radius: 5px;
+    }
+
+    button {
+      padding: 10px 15px;
+      margin-left: 10px;
+      margin-top: 10px;
+      border-radius: 10px;
+      cursor: pointer;
+      background-color: #0026ff;
+      color: #080808;
+    }
+
+    button:hover {
+      background-color: #2c7b04;
+    }
+
+    button:active {
+      background-color: #0056b3;
+    }
+
+    button:focus {
+      outline: none;
+    }
+
+    button + button {
+      margin-left: 10px; 
+    
+    }
+
+    .task-container {
+      margin-top: 20px;
+    }
+
+    .task-item {
+      display: flex;
+      align-items: center;
+      padding: 10px;
+      border-bottom: 1px solid #ccc;
+    }
+
+    .task-item:last-child {
+      border-bottom: none;
+    }
+
+    .completed {
+      text-decoration: line-through;
+      color: #888;
+    }
+  </style>
+   
+
+</head>
+<body>
+  <div id="root"></div>
+  <script src="https://unpkg.com/react@18.2.0/umd/react.development.js"></script>
+  <script src="https://unpkg.com/react-dom@18.2.0/umd/react-dom.development.js"></script>
+  <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+  <script type="text/babel">
+    
+    // the TodoList component part
+    function TodoList({ tasks, filter, removeTask, toggleTask }) {
+      let filteredTasks = tasks.filter((task) => {
+        if (filter === "active") {
+          return !task.completed;
+        } else if (filter === "completed") {
+          return task.completed;
+        } else {
+          return true;
+        }
+      });
+
+      return (
+        <div>
+          {filteredTasks.map((task) => (
+            <div key={task.id}>
+              <input 
+                type="checkbox" 
+                checked={task.completed} 
+                onChange={() => toggleTask(task.id)}
+              />
+              <span className={task.completed ? "completed" : ""}>{task.text}</span>
+              <button onClick={() => removeTask(task.id)}>Remove</button>
+            </div>
+          ))}
+        </div>
+      );
+    }
+
+    // the App component part
+    class App extends React.Component {
+      constructor(props) {
+        super(props);
+        this.state = {
+          tasks: [
+            { id: 1, text: "Add your Task...", completed: true },
+            { id: 2, text: "Give time to your self", completed: false },
+            { id: 3, text: "Make It Simple!", completed: false }
+          ],
+          filter: "all",
+          newTaskText: "" 
+        };
+      }
+
+      // Function for input change for new task text
+      handleNewTaskChange = (e) => {
+        this.setState({ newTaskText: e.target.value });
+      };
+
+      // Function for add new task to the list
+      addTask = () => {
+        let { tasks, newTaskText } = this.state;
+        if (newTaskText.trim() !== "") {
+          const newTask = {
+            id: tasks.length + 1,
+            text: newTaskText,
+            completed: false
+          };
+          this.setState({
+            tasks: [...tasks, newTask],
+            newTaskText: "" 
+          });
+        }
+      };
+
+      // Function for remove the task from the list
+      removeTask = (taskId) => {
+        let updatedTasks = this.state.tasks.filter((task) => task.id !== taskId);
+        this.setState({ tasks: updatedTasks });
+      };
+
+      // Function for toggle the task completion
+      toggleTask = (taskId) => {
+        let updatedTasks = this.state.tasks.map((task) =>
+          task.id === taskId ? { ...task, completed: !task.completed } : task
+        );
+        this.setState({ tasks: updatedTasks });
+      };
+
+      render() {
+        let { tasks, filter, newTaskText } = this.state;
+
+        return (
+          <div>
+            <div>
+              <input
+                type="text"
+                value={newTaskText}
+                onChange={this.handleNewTaskChange}
+                placeholder="Enter Your Task..."
+              />
+              <button onClick={this.addTask}>Add Task</button>
+              <button onClick={() => this.setState({ filter: "all" })}>All</button>
+              <button onClick={() => this.setState({ filter: "active" })}>Active</button>
+              <button onClick={() => this.setState({ filter: "completed" })}>Completed</button>
+            </div>
+            <TodoList tasks={tasks} filter={filter} removeTask={this.removeTask} toggleTask={this.toggleTask} />
+          </div>
+        );
+      }
+    }
+
+    // Render the App component
+    ReactDOM.render(<App />, document.getElementById("root"));
+  </script>
+</body>
+</html>

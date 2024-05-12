@@ -1,0 +1,179 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Quiz Application</title>
+    <style>
+        body {
+          font-family: Cambria, Cochin, Georgia, Times, 'Times New Roman', serif;
+          background-color: #f0f0f0;
+        }
+    
+        .container {
+          max-width: 800px;
+          margin: 20px auto;
+          background-color: #fff;
+          padding: 20px;
+          border: 1px solid #ccc;
+          border-radius: 5px;
+          box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+    
+        h1 {
+          text-align: center;
+          color: #333;
+          text-shadow: 1px 1px #ccc;
+          margin-bottom: 20px;
+        }
+    
+        .question {
+          margin-bottom: 10px;
+          font-size: 18px;
+          color: #333;
+        }
+    
+        label {
+          display: block;
+          margin-bottom: 5px;
+          font-size: 16px;
+          color: #333;
+          cursor: pointer;
+        }
+    
+        input[type="radio"] {
+          margin-right: 5px;
+        }
+    
+        .options {
+          margin-bottom: 20px;
+          
+        }
+    
+        button {
+          display: block;
+          margin: 0 auto;
+          padding: 10px 20px;
+          border: none;
+          border-radius: 5px;
+          background-color: #007bff;
+          color: #fff;
+          font-size: 16px;
+          cursor: pointer;
+        }
+    
+        button:hover {
+          background-color: #06f60a85;
+        }
+    
+        .score {
+          text-align: center;
+          margin-top: 20px;
+          font-size: 20px;
+          color: #333;
+        }
+      </style>
+  </head>
+  <body>
+    <div id="root"></div>
+  </body>
+  <script src="https://www.unpkg.com/react@18.2.0/umd/react.development.js"></script>
+  <script src="https://www.unpkg.com/react-dom@18.2.0/umd/react-dom.development.js"></script>
+  <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+  <script type="text/babel">
+    // Your  code will go here
+    const { useState } = React;
+
+function Quiz() {
+  let questions = [
+    {
+      question: "1. What is the capital of France?",
+      options: ["Paris", "London", "Berlin", "Madrid"],
+      correctAnswer: "Paris"
+    },
+    {
+      question: "2. What is the largest planet in our solar system?",
+      options: ["Earth", "Mars", "Jupiter", "Saturn"],
+      correctAnswer: "Jupiter"
+    },
+    {
+      question: "3. Who wrote 'To Kill a Mockingbird'?",
+      options: ["Stephen King", "Harper Lee", "J.K. Rowling", "Mark Twain"],
+      correctAnswer: "Harper Lee"
+    },
+    {
+      question: "4. What is the capital of Japan?",
+      options: ["Tokyo", "Seoul", "Beijing", "Bangkok"],
+      correctAnswer: "Tokyo"
+    },
+    {
+      question: "5. Who painted the Mona Lisa?",
+      options: ["Vincent van Gogh", "Leonardo da Vinci", "Pablo Picasso", "Michelangelo"],
+      correctAnswer: "Leonardo da Vinci"
+    }
+  ];
+
+  let [selectedAnswers, setSelectedAnswers] = useState(new Array(questions.length).fill(null));
+  let [showScore, setShowScore] = useState(false);
+  let [score, setScore] = useState(0);
+
+  let handleOptionSelect = (questionIndex, optionIndex) => {
+    let newSelectedAnswers = [...selectedAnswers];
+    newSelectedAnswers[questionIndex] = optionIndex;
+    setSelectedAnswers(newSelectedAnswers);
+  };
+
+  let calculateScore = () => {
+    let newScore = 0;
+    selectedAnswers.forEach((selectedOptionIndex, questionIndex) => {
+      if (selectedOptionIndex !== null && questions[questionIndex].options[selectedOptionIndex] === questions[questionIndex].correctAnswer) {
+        newScore++;
+      }
+    });
+    setScore(newScore);
+    setShowScore(true);
+  };
+
+  let restartQuiz = () => {
+    setSelectedAnswers(new Array(questions.length).fill(null));
+    setShowScore(false);
+    setScore(0);
+  };
+
+  return (
+    <div>
+      {!showScore ? (
+        <div>
+          {questions.map((question, questionIndex) => (
+            <div key={questionIndex}>
+              <h3>{question.question}</h3>
+              {question.options.map((option, optionIndex) => (
+                <div key={optionIndex}>
+                  <label>
+                    <input 
+                      type="radio"
+                      checked={selectedAnswers[questionIndex] === optionIndex}
+                      onChange={() => handleOptionSelect(questionIndex, optionIndex)}
+                    />
+                    {option}
+                  </label>
+                </div>
+              ))}
+            </div>
+          ))}
+          <button onClick={calculateScore}>Submit</button>
+        </div>
+      ) : (
+        <div>
+          <h2>Your Score: {score}/{questions.length}</h2>
+          <button onClick={restartQuiz}>Restart Quiz</button>
+        </div>
+      )}
+    </div>
+  );
+}
+
+ReactDOM.render(<Quiz />, document.getElementById('root'));
+
+  </script>
+</html>

@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Dynamic Form</title>
+    <style>
+      body {
+        font-family:'Trebuchet MS', 'Lucida Sans Unicode', 'Lucida Grande', 'Lucida Sans', Arial, sans-serif;
+      }
+
+      form {
+        margin: 20px auto;
+        width: 300px;
+      }
+
+      input {
+        margin-bottom: 10px;
+        width: calc(100% - 80px);
+        padding: 5px;
+        border: 2px solid #050505;
+        border-radius: 4px;
+      }
+
+      button {
+        margin-bottom: 10px;
+        width: 100px;
+        margin-right: 10px;
+        padding: 5px;
+        background-color: #050505;
+        color: #fff;
+        border: none;
+        border-radius: 4px;
+        cursor: pointer;
+      }
+
+      button:disabled {
+        background-color: #ccc;
+        cursor: not-allowed;
+      }
+
+      button:hover {
+        background-color: #03fb30b4;
+      }
+    </style>
+  </head>
+  <body>
+    <div id="root"></div>
+  </body>
+  <script src="https://unpkg.com/react@18/umd/react.development.js"></script>
+  <script src="https://unpkg.com/react-dom@18/umd/react-dom.development.js"></script>
+  <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+  <script type="text/babel">
+
+    let { useState } = React;
+
+    function App() {
+      let [hobbies, setHobbies] = useState(['']); // Initial state with one empty hobby field
+
+      // Function for adding a new hobby field
+      let addHobby = () => {
+        setHobbies([...hobbies, '']);
+      };
+
+      // Function for removing a hobby field
+      let removeHobby = (index) => {
+        if (hobbies.length === 1) return; // Ensure at least one field remains
+        const newHobbies = [...hobbies];
+        newHobbies.splice(index, 1);
+        setHobbies(newHobbies);
+      };
+
+      // Function for changing the value of a hobby field
+      let handleHobbyChange = (value, index) => {
+        let newHobbies = [...hobbies];
+        newHobbies[index] = value;
+        setHobbies(newHobbies);
+      };
+
+      let handleSubmit = (event) => {
+  event.preventDefault();
+  console.log('Submitted Hobbies:', hobbies);
+  setHobbies(['']);
+};
+
+      return (
+        <div>
+          <form onSubmit={handleSubmit}>
+            {hobbies.map((hobby, index) => (
+              <div key={index}>
+                <input
+                  type="text"
+                  value={hobby}
+                  onChange={(e) => handleHobbyChange(e.target.value, index)}
+                />
+                <button type="button" onClick={() => removeHobby(index)} disabled={index === 0}>
+                  Remove
+                </button>
+              </div>
+            ))}
+            <button type="button" onClick={addHobby}>
+              Add Hobby
+            </button>
+            <button type="submit">Submit</button>
+          </form>
+        </div>
+      );
+    }
+
+    const root = ReactDOM.createRoot(document.getElementById('root'));
+    root.render(<App />);
+  </script>
+</html>
